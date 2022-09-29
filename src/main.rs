@@ -2,6 +2,8 @@
 
 mod memory;
 mod registers;
+mod display;
+
 
 // ----- Main Entry Point ----- //
 
