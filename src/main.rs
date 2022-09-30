@@ -1,8 +1,9 @@
 // ----- Modules ----- //
 
+mod display;
 mod memory;
 mod registers;
-mod display;
+mod stack;
 
 
 // ----- Main Entry Point ----- //
