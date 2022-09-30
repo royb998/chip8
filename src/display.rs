@@ -29,7 +29,7 @@ impl Display {
     }
 
     pub fn show(&self) {
-        Command::new("clear").status();  // TODO: Handle possible error?
+        let _ = Command::new("clear").status();  // TODO: Handle possible error?
         for row in self.grid.iter() {
             for pixel in row.iter() {
                 if *pixel {
@@ -51,14 +51,18 @@ impl Display {
     }
 
     pub fn add_sprite(&mut self, sprite: &Sprite, x: usize, y: usize) {
+        let true_x = x % DISPLAY_WIDTH;
+        let true_y = y % DISPLAY_HEIGHT;
+
         for i in 0..SPRITE_WIDTH {
-            if x + i >= DISPLAY_WIDTH { break; }
+            if true_x + i >= DISPLAY_WIDTH { break; }
 
             for j in 0..SPRITE_HEIGHT {
-                if y + j >= DISPLAY_HEIGHT { break; }
+                if true_y + j >= DISPLAY_HEIGHT { break; }
 
-                let current = self.grid[y + j][x + i];
-                self.grid[y + j][x + i] = current ^ sprite.get_pixel(i, j);
+                let current = self.grid[true_y + j][true_x + i];
+                let pixel = sprite.get_pixel(i, j);
+                self.grid[true_y + j][true_x + i] = current ^ pixel;
             }
         }
     }
@@ -66,6 +70,8 @@ impl Display {
 
 impl Sprite {
     pub fn from(bytes: Vec<u8>) -> Sprite {
+        assert!(bytes.len() <= SPRITE_HEIGHT);
+
         let mut pixels: [[bool; SPRITE_WIDTH]; SPRITE_HEIGHT] = [
             [false; SPRITE_WIDTH]; SPRITE_HEIGHT
         ];

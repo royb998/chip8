@@ -1,24 +1,29 @@
+// ----- Imports ----- //
+
+use crate::memory::address::{MAX_ADDRESS, Address};
+
 // ----- Consts ----- //
 
 const VARIABLE_COUNT: usize = 0x10;
 const FLAG_INDEX: usize = 0xF;
+const INITIAL_PC: usize = 0x200;
 
 // ----- Structs ----- //
 
 pub struct Registers {
-    i: u16,  // Index register
+    i: Address,  // Index register
     v: [u8; VARIABLE_COUNT],  // Variable registers
 }
 
 /// Program counter register.
 pub struct PC {
-    value: u16,
+    value: Address,
 }
 
 impl Registers {
     pub fn new() -> Registers {
         return Registers {
-            i: 0,
+            i: Address::from(0),
             v: [0; VARIABLE_COUNT],
         };
     }
@@ -41,11 +46,11 @@ impl Registers {
         self.v[index] = value;
     }
 
-    pub fn get_index(&self) -> u16 {
-        return self.i;
+    pub fn get_index(&self) -> Address {
+        return self.i.clone();
     }
 
-    pub fn set_index(&mut self, value: u16) {
+    pub fn set_index(&mut self, value: Address) {
         self.i = value;
     }
 
@@ -65,24 +70,22 @@ impl Registers {
 impl PC {
     pub fn new() -> PC {
         return PC {
-            value: 0,
+            value: Address::from(INITIAL_PC),
         };
     }
 
-    pub fn get(&self) -> u16 {
-        return self.value;
+    pub fn get(&self) -> Address {
+        return self.value.clone();
     }
 
-    pub fn set(&mut self, value: u16) {
-        // TODO: Raise error if needed.
-        if value > 0xFFF {
-            return;
-        }
-
+    pub fn set(&mut self, value: Address) {
         self.value = value;
     }
 
     pub fn increment(&mut self) {
-        self.value += 2;
+        let current = self.value.get();
+        let new = current + 2;
+        assert!(new <= MAX_ADDRESS);
+        self.value = Address::from(new);
     }
 }

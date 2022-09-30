@@ -4,11 +4,15 @@ pub mod address;
 
 // ----- Imports ----- //
 
+use std::fs;
 use address::Address;
 
 // ----- Consts ----- //
 
 const MEMORY_SIZE: usize = 0x1000;  // 2 ** 12
+const FONT_PATH: &str = r"resources\font.bin";
+const FONT_ADDR: usize = 0x50;
+const EXE_ADDR: usize = 0x200;
 
 // ----- Structs ----- //
 
@@ -17,10 +21,13 @@ pub struct Memory {
 }
 
 impl Memory {
-    pub fn new() -> Memory {
-        let result = Memory {
+    pub fn new(exe_path: &str) -> Memory {
+        let mut result = Memory {
             buffer: [0; MEMORY_SIZE]
         };
+
+        result.load_file(Address::from(FONT_ADDR), FONT_PATH);
+        result.load_file(Address::from(EXE_ADDR), exe_path);
 
         return result;
     }
@@ -65,5 +72,11 @@ impl Memory {
         }
 
         return len;
+    }
+
+    pub fn load_file(&mut self, address: Address, file_path: &str) {
+        let idk =  fs::read(file_path).expect("Failed to read data.");
+
+        self.write(address, &idk);
     }
 }
