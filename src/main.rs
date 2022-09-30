@@ -1,5 +1,6 @@
 // ----- Modules ----- //
 
+mod cpu;
 mod display;
 mod memory;
 mod registers;
