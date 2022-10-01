@@ -58,12 +58,8 @@ impl Registers {
         return self.v[FLAG_INDEX] > 0;
     }
 
-    pub fn set_flag(&mut self) {
-        self.v[FLAG_INDEX] = 1;
-    }
-
-    pub fn reset_flag(&mut self) {
-        self.v[FLAG_INDEX] = 0;
+    pub fn set_flag(&mut self, value: bool) {
+        self.v[FLAG_INDEX] = value as u8;
     }
 }
 
@@ -85,7 +81,11 @@ impl PC {
     pub fn increment(&mut self) {
         let current = self.value.get();
         let new = current + 2;
-        assert!(new <= MAX_ADDRESS);
+
+        if new >= MAX_ADDRESS {
+            println!("Reached end of memory");
+            assert!(false);
+        }
         self.value = Address::from(new);
     }
 }
