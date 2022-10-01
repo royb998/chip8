@@ -1,6 +1,6 @@
 // ----- Imports ----- //
 
-use crate::Instruction::{*};
+use crate::cpu::instructions::Instruction::{*};
 use crate::memory::address::Address;
 
 // ----- Types ----- //
@@ -36,7 +36,7 @@ pub enum Instruction {
 impl Instruction {
     pub fn from(opcode: u16) -> Instruction {
         // Get all possible values from opcode.
-        let inst_group = ((opcode >> 12) & 0x0F);
+        let inst_group = (opcode >> 12) & 0x0F;
         let imm4: Imm4 = (opcode & 0x0F) as u8;
         let imm8: Imm8 = (opcode & 0xFF) as u8;
         let imm12: Imm12 = opcode & 0x0FFF;

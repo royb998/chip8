@@ -16,6 +16,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
         println!("Missing target exe!");
+        return;
     }
 
     let mut cpu = CPU::new(&args[1]);

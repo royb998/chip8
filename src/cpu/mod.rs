@@ -4,18 +4,18 @@ pub mod instructions;
 
 // ----- Imports ----- //
 
-use std::thread::sleep;
-use std::time::Duration;
-use crate::Address;
+// use std::thread::sleep;
+// use std::time::Duration;
 
 use crate::cpu::instructions::Instruction;
 use crate::display::{Display, Sprite};
+use crate::memory::address::Address;
 use crate::memory::Memory;
 use crate::registers::{PC, Registers};
 
 // ----- Consts ----- //
 
-const INSTRUCTION_PAUSE: Duration = Duration::from_micros(1400);
+// const INSTRUCTION_PAUSE: Duration = Duration::from_micros(1400);
 
 // ----- Structs ----- //
 
@@ -92,7 +92,9 @@ impl CPU {
         let x = self.registers.get_variable(x_reg);
         let y = self.registers.get_variable(y_reg);
 
-        self.display.add_sprite(&sprite, x as usize, y as usize);
+        self.registers.set_flag(false);
+        let overflow = self.display.add_sprite(&sprite, x as usize, y as usize);
+        self.registers.set_flag(overflow);
         self.display.show();
     }
 }

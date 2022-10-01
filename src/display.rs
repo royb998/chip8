@@ -50,9 +50,16 @@ impl Display {
         }
     }
 
-    pub fn add_sprite(&mut self, sprite: &Sprite, x: usize, y: usize) {
+    /// Add the given sprite to the display.
+    /// Pixels from the given `sprite` are xorred with existing pixels, so that
+    /// 1s switch a pixel, and 0s have no effect.
+    ///
+    /// Returns `true` if any operation resulted in a pixel getting turned off,
+    /// `false` otherwise.
+    pub fn add_sprite(&mut self, sprite: &Sprite, x: usize, y: usize) -> bool {
         let true_x = x % DISPLAY_WIDTH;
         let true_y = y % DISPLAY_HEIGHT;
+        let mut result = false;
 
         for i in 0..SPRITE_WIDTH {
             if true_x + i >= DISPLAY_WIDTH { break; }
@@ -62,9 +69,11 @@ impl Display {
 
                 let current = self.grid[true_y + j][true_x + i];
                 let pixel = sprite.get_pixel(i, j);
+                result |= current & pixel;
                 self.grid[true_y + j][true_x + i] = current ^ pixel;
             }
         }
+        return result;
     }
 }
 
