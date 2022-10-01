@@ -1,0 +1,28 @@
+
+rand v0 0xff
+set v1, v0
+set_imm v2, 0x0F
+and v1, v2
+
+set v3, v1
+shl v3, v3
+shl v3, v3
+add v3, v1
+set_index 0x50
+add_to_index v3
+set_imm v5, 6
+set_imm v6, 0
+draw v5, v6, 5
+
+set_imm v2, 0xF0
+and v0, v2
+shr v0, v0
+shr v0, v0
+set v3. v0
+shr v0, v0
+shr v0, v0
+add v3, v0
+set_index 0x50
+add_to_index v3
+set_imm v5, 0
+draw v5, v6, 5

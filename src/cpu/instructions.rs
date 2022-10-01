@@ -33,6 +33,7 @@ pub enum Instruction {
     SETN(Imm12),
     ADDN(Reg),
 
+    RAND(Reg, Imm8),
     DRAW(Reg, Reg, Imm4),
 
     INVALID(),
@@ -68,7 +69,7 @@ impl Instruction {
             0x9 => { SRNE(x, y) }
             0xa => { SETN(imm12) }
             // 0xb => {} // TODO: Jump offset
-            // 0xc => {} // TODO: Random
+            0xc => { RAND(x, imm8) }
             0xd => { DRAW(x, y, imm4) } // TODO: Draw
             // 0xe => {} // TODO: Skip if Key
             0xf => {

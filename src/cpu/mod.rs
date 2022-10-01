@@ -6,6 +6,7 @@ pub mod instructions;
 
 // use std::thread::sleep;
 // use std::time::Duration;
+use rand::Rng;
 
 use crate::cpu::instructions::Instruction;
 use crate::display::{Display, Sprite};
@@ -62,6 +63,10 @@ impl CPU {
             Instruction::SETN(imm) => {
                 let addr = Address::from(imm as usize);
                 self.registers.set_index(addr);
+            }
+            Instruction::RAND(x, imm) => {
+                let value = rand::thread_rng().gen_range(0..=0xFF);
+                self.registers.set_variable(x, value & imm);
             }
             Instruction::DRAW(x, y, n) => { self.draw(x, y, n); }
 
