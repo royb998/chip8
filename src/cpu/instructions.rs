@@ -15,18 +15,23 @@ type Imm12 = u16;
 #[derive(Debug)]
 pub enum Instruction {
     CLS(),
+
+    // Flow control:
     RET(),
     JUMP(Address),
     CALL(Address),
+    JMPO(Address),
+
     // Skip instructions:
     SEQ(Reg, Imm8),
     SNE(Reg, Imm8),
     SRE(Reg, Reg),
     SRNE(Reg, Reg),
 
-    SETM(Reg, Imm8),
+    SETI(Reg, Imm8),
     ADDI(Reg, Imm8),
-    SETI(Imm12),
+    SETN(Imm12),
+    ADDN(Reg),
 
     DRAW(Reg, Reg, Imm4),
 
@@ -57,16 +62,21 @@ impl Instruction {
             0x3 => { SEQ(x, imm8) }
             0x4 => { SNE(x, imm8) }
             0x5 => { SRE(x, y) }
-            0x6 => { SETM(x, imm8) }
+            0x6 => { SETI(x, imm8) }
             0x7 => { ADDI(x, imm8) }
             // 0x8 => {} // TODO: Arithmetic instructions
             0x9 => { SRNE(x, y) }
-            0xa => { SETI(imm12) }
+            0xa => { SETN(imm12) }
             // 0xb => {} // TODO: Jump offset
             // 0xc => {} // TODO: Random
             0xd => { DRAW(x, y, imm4) } // TODO: Draw
             // 0xe => {} // TODO: Skip if Key
-            // 0xf => {} // TODO: Others
+            0xf => {
+                match imm8 {
+                    0x1e => { ADDN(x) }
+                    _ => { INVALID() }
+                }
+            } // TODO: Others
             _ => { INVALID() }
         }
     }

@@ -51,7 +51,7 @@ impl CPU {
         match instruction {
             Instruction::CLS() => { self.display.clear(); }
             Instruction::JUMP(addr) => { self.pc.set(addr); }
-            Instruction::SETM(x, imm) => {
+            Instruction::SETI(x, imm) => {
                 self.registers.set_variable(x, imm);
             }
             Instruction::ADDI(x, imm) => {
@@ -59,12 +59,19 @@ impl CPU {
                 let new = current + imm;
                 self.registers.set_variable(x, new);
             }
-            Instruction::SETI(imm) => {
+            Instruction::SETN(imm) => {
                 let addr = Address::from(imm as usize);
                 self.registers.set_index(addr);
             }
             Instruction::DRAW(x, y, n) => { self.draw(x, y, n); }
-            _ => {}
+
+            Instruction::ADDN(x) => {
+                let index = self.registers.get_index();
+                let x = self.registers.get_variable(x);
+                let new = index.get() + x as usize;
+                self.registers.set_index(Address::from(new));
+            }
+            _ => { assert!(false) }
         };
     } // TODO
 
