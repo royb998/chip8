@@ -75,7 +75,7 @@ impl Instruction {
             0xa => { SETN(imm12) }
             // 0xb => {} // TODO: Jump offset
             0xc => { RAND(x, imm8) }
-            0xd => { DRAW(x, y, imm4) } // TODO: Draw
+            0xd => { DRAW(x, y, imm4) }
             // 0xe => {} // TODO: Skip if Key
             0xf => {
                 match imm8 {

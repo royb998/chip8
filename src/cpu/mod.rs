@@ -13,6 +13,7 @@ use crate::display::{Display, Sprite};
 use crate::memory::address::Address;
 use crate::memory::Memory;
 use crate::registers::{PC, Registers};
+use crate::stack::Stack;
 use crate::timers::Timer;
 
 // ----- Consts ----- //
@@ -24,6 +25,7 @@ use crate::timers::Timer;
 pub struct CPU {
     display: Display,
     memory: Memory,
+    stack: Stack,
     registers: Registers,
     pc: PC,
     delay_timer: Timer,
@@ -34,7 +36,8 @@ impl CPU {
     pub fn new(exe_path: &str) -> CPU {
         CPU {
             display: Display::new(),
-            memory: Memory::new(exe_path), // TODO: Load initial memory.
+            memory: Memory::new(exe_path),
+            stack: Stack::new(),
             registers: Registers::new(),
             pc: PC::new(),
             delay_timer: Timer::new(),
@@ -56,7 +59,14 @@ impl CPU {
     fn execute(&mut self, instruction: Instruction) {
         match instruction {
             Instruction::CLS() => { self.display.clear(); }
+            Instruction::RET() => {
+                self.pc.set(self.stack.pop());
+            }
             Instruction::JUMP(addr) => { self.pc.set(addr); }
+            Instruction::CALL(addr) => {
+                self.stack.push(self.pc.get());
+                self.pc.set(addr);
+            }
             Instruction::SETI(x, imm) => {
                 self.registers.set_variable(x, imm);
             }

@@ -1,8 +1,11 @@
+// ----- Imports ----- //
+
+use crate::memory::address::Address;
+
 // ----- Structs ----- //
 
-// TODO: Consider handling the stack in the memory.
 pub struct Stack {
-    values: Vec<u16>,
+    values: Vec<Address>,
 }
 
 impl Stack {
@@ -10,12 +13,11 @@ impl Stack {
         return Stack { values: Vec::new() };
     }
 
-    pub fn push(&mut self, address: u16) {
+    pub fn push(&mut self, address: Address) {
         self.values.push(address);
     }
 
-    // TODO: Raise errors and remove Option.
-    pub fn pop(&mut self) -> Option<u16> {
-        return self.values.pop();
+    pub fn pop(&mut self) -> Address {
+        return self.values.pop().expect("Call stack is empty.");
     }
 }
