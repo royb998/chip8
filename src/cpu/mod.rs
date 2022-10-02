@@ -13,6 +13,7 @@ use crate::display::{Display, Sprite};
 use crate::memory::address::Address;
 use crate::memory::Memory;
 use crate::registers::{PC, Registers};
+use crate::timers::Timer;
 
 // ----- Consts ----- //
 
@@ -25,6 +26,8 @@ pub struct CPU {
     memory: Memory,
     registers: Registers,
     pc: PC,
+    delay_timer: Timer,
+    sound_timer: Timer,
 }
 
 impl CPU {
@@ -34,6 +37,8 @@ impl CPU {
             memory: Memory::new(exe_path), // TODO: Load initial memory.
             registers: Registers::new(),
             pc: PC::new(),
+            delay_timer: Timer::new(),
+            sound_timer: Timer::new(),
         }
     }
 
@@ -75,6 +80,18 @@ impl CPU {
                 let x = self.registers.get_variable(x);
                 let new = index.get() + x as usize;
                 self.registers.set_index(Address::from(new));
+            }
+            Instruction::STD(x) => {
+                let value = self.registers.get_variable(x);
+                self.delay_timer.set(value);
+            }
+            Instruction::RDD(x) => {
+                let value = self.delay_timer.get();
+                self.registers.set_variable(x, value);
+            }
+            Instruction::STS(x) => {
+                let value = self.registers.get_variable(x);
+                self.sound_timer.set(value);
             }
             _ => { assert!(false) }
         };

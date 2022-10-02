@@ -5,6 +5,7 @@ mod display;
 mod memory;
 mod registers;
 mod stack;
+mod timers;
 
 // ----- Imports ----- //
 

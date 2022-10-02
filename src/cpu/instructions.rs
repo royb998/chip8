@@ -33,6 +33,11 @@ pub enum Instruction {
     SETN(Imm12),
     ADDN(Reg),
 
+    // Timers
+    STD(Reg),
+    RDD(Reg),
+    STS(Reg),
+
     RAND(Reg, Imm8),
     DRAW(Reg, Reg, Imm4),
 
@@ -75,6 +80,9 @@ impl Instruction {
             0xf => {
                 match imm8 {
                     0x1e => { ADDN(x) }
+                    0x07 => { RDD(x) }
+                    0x15 => { STD(x) }
+                    0x18 => { STS(x) }
                     _ => { INVALID() }
                 }
             } // TODO: Others
