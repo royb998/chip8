@@ -10,6 +10,7 @@ use rand::Rng;
 
 use crate::cpu::instructions::Instruction;
 use crate::display::{Display, Sprite};
+use crate::memory;
 use crate::memory::address::Address;
 use crate::memory::Memory;
 use crate::registers::{PC, Registers};
@@ -135,7 +136,7 @@ impl CPU {
             Instruction::SUB(x, y) => {
                 let a = 0x0100 + self.registers.get_variable(x) as u16;
                 let b = self.registers.get_variable(y) as u16;
-                let mut result = a - b;
+                let result = a - b;
 
                 self.registers.set_flag(result & 0x0100 > 0);
                 self.registers.set_variable(x, result as u8);
@@ -170,21 +171,63 @@ impl CPU {
                 let new = index.get() + x as usize;
                 self.registers.set_index(Address::from(new));
             }
-            Instruction::STD(x) => {
-                let value = self.registers.get_variable(x);
-                self.delay_timer.set(value);
-            }
             Instruction::RDD(x) => {
                 let value = self.delay_timer.get();
                 self.registers.set_variable(x, value);
+            }
+            Instruction::STD(x) => {
+                let value = self.registers.get_variable(x);
+                self.delay_timer.set(value);
             }
             Instruction::STS(x) => {
                 let value = self.registers.get_variable(x);
                 self.sound_timer.set(value);
             }
-            _ => {
-                println!("{:?}", instruction);
-                assert!(false) }
+            Instruction::FONT(x) => {
+                let mut i = memory::FONT_ADDR;
+                let hex = self.registers.get_variable(x) & 0x0F;
+                i += memory::FONT_HEIGHT * (hex as usize);
+                self.registers.set_index(Address::from(i));
+            }
+            Instruction::BCD(x) => {
+                let mut value = self.registers.get_variable(x);
+                let mut digits: Vec<u8> = Vec::new();
+
+                while value > 0 {
+                    let current = value % 10;
+                    digits.insert(0, current);
+                    value /= 10;
+                }
+
+                let address = self.registers.get_index();
+                self.memory.write(address, &digits);
+            }
+            Instruction::STM(x) => {
+                let mut data: Vec<u8> = Vec::new();
+
+                for i in 0..=x {
+                    data.push(self.registers.get_variable(i));
+                }
+
+                let address = self.registers.get_index();
+                // let new = Address::from(address.get() + x as usize + 1);
+                // self.registers.set_index(new);
+
+                self.memory.write(address, &data);
+            }
+            Instruction::LDM(x) => {
+                let address = self.registers.get_index();
+                // let new = Address::from(address.get() + x as usize + 1);
+                // self.registers.set_index(new);
+
+                let data = self.memory.read(address, x + 1);
+                assert_eq!(data.len(), x + 1);
+
+                for (i, value) in data.iter().enumerate() {
+                    self.registers.set_variable(i, *value);
+                }
+            }
+            _ => { panic!("Tried to run instruction at {:?}", self.pc.get()); }
         };
     } // TODO
 

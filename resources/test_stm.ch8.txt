@@ -1,0 +1,16 @@
+
+seti v0, 0xFF
+seti v1, 0x81
+seti v2, 0x42
+seti v3, 0x24
+seti v4, 0x18
+seti v5, 0x24
+seti v6, 0x42
+seti v7, 0x81
+seti v8, 0xFF
+
+setn 0x300
+stm v8
+seti va, 1
+seti vb, 1
+draw va, vb, 9

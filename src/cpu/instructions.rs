@@ -50,6 +50,10 @@ pub enum Instruction {
 
     RAND(Reg, Imm8),
     DRAW(Reg, Reg, Imm4),
+    FONT(Reg),
+    BCD(Reg),
+    STM(Reg),
+    LDM(Reg),
 
     INVALID(),
 }
@@ -106,6 +110,10 @@ impl Instruction {
                     0x07 => { RDD(x) }
                     0x15 => { STD(x) }
                     0x18 => { STS(x) }
+                    0x29 => { FONT(x) }
+                    0x33 => { BCD(x) }
+                    0x55 => { STM(x) }
+                    0x65 => { LDM(x) }
                     _ => { INVALID() }
                 }
             } // TODO: Others

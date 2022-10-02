@@ -11,7 +11,8 @@ use address::Address;
 
 const MEMORY_SIZE: usize = 0x1000;  // 2 ** 12
 const FONT_PATH: &str = r"resources\font.bin";
-const FONT_ADDR: usize = 0x50;
+pub const FONT_ADDR: usize = 0x50;
+pub const FONT_HEIGHT: usize = 5;
 const EXE_ADDR: usize = 0x200;
 
 // ----- Structs ----- //

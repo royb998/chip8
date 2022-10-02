@@ -83,9 +83,32 @@ impl PC {
         let new = current + 2;
 
         if new >= MAX_ADDRESS {
-            println!("Reached end of memory");
-            assert!(false);
+            panic!("Reached end of memory");
         }
         self.value = Address::from(new);
     }
+}
+
+// ----- Test ----- //
+
+pub fn test() {
+    let mut reg = Registers::new();
+
+    let v0 = reg.get_variable(0);
+    reg.set_variable(3, 0xFD);
+    let v3 = reg.get_variable(3);
+
+    reg.set_flag(true);
+    println!("v0: {}; v3: {}, vf: {}, i: {:?}", v0, v3, reg.get_flag(), reg.get_index());
+
+    reg.set_index(Address::from(0xBAD));
+    reg.set_flag(false);
+    println!("vf: {}; i: {:?}", reg.get_flag(), reg.get_index());
+
+    let mut pc = PC::new();
+
+    pc.set(Address::from(0x200));
+    print!("{:?} ", pc.get());
+    pc.increment();
+    println!("{:?}", pc.get());
 }
