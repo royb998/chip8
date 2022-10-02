@@ -21,6 +21,8 @@ pub enum Instruction {
     JUMP(Address),
     CALL(Address),
     JMPO(Address),
+    SETN(Address),
+    ADDN(Reg),
 
     // Skip instructions:
     SEQ(Reg, Imm8),
@@ -28,18 +30,15 @@ pub enum Instruction {
     SRE(Reg, Reg),
     SRNE(Reg, Reg),
 
+    // Arithmetics:
     SETI(Reg, Imm8),
     ADDI(Reg, Imm8),
-    SETN(Imm12),
-    ADDN(Reg),
-
-    // Arithmetics:
     SET(Reg, Reg),
     OR(Reg, Reg),
     AND(Reg, Reg),
     XOR(Reg, Reg),
-    ADD(Reg, Reg), // with carry to vf
-    SUB(Reg, Reg), // Use with each direction. carry if a > b for (a - b)
+    ADD(Reg, Reg),
+    SUB(Reg, Reg),
     SHL(Reg, Reg),
     SHR(Reg, Reg),
 
@@ -55,7 +54,7 @@ pub enum Instruction {
     STM(Reg),
     LDM(Reg),
 
-    INVALID(),
+    INVALID(u16),
 }
 
 impl Instruction {
@@ -70,11 +69,11 @@ impl Instruction {
         let y: Reg = ((opcode >> 4) & 0x0F) as usize;
 
         match inst_group {
-            0 => {
+            0x0 => {
                 match opcode {
                     0x00E0 => { CLS() }
                     0x00EE => { RET() }
-                    _ => { INVALID() }
+                    _ => { INVALID(opcode) }
                 }
             }
             0x1 => { JUMP(address) }
@@ -95,11 +94,11 @@ impl Instruction {
                     0x7 => { SUB(y, x) }
                     0x6 => { SHR(x, y) }
                     0xe => { SHL(x, y) }
-                    _ => { INVALID() }
+                    _ => { INVALID(opcode) }
                 }
             }
             0x9 => { SRNE(x, y) }
-            0xa => { SETN(imm12) }
+            0xa => { SETN(address) }
             0xb => { JMPO(address) }
             0xc => { RAND(x, imm8) }
             0xd => { DRAW(x, y, imm4) }
@@ -114,10 +113,10 @@ impl Instruction {
                     0x33 => { BCD(x) }
                     0x55 => { STM(x) }
                     0x65 => { LDM(x) }
-                    _ => { INVALID() }
+                    _ => { INVALID(opcode) }
                 }
-            } // TODO: Others
-            _ => { INVALID() }
+            }
+            _ => { INVALID(opcode) }
         }
     }
 }

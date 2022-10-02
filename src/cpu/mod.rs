@@ -102,8 +102,7 @@ impl CPU {
                 let new = (current + imm as u16) as u8;
                 self.registers.set_variable(x, new);
             }
-            Instruction::SETN(imm) => {
-                let addr = Address::from(imm as usize);
+            Instruction::SETN(addr) => {
                 self.registers.set_index(addr);
             }
             Instruction::SET(x, y) => {
@@ -227,7 +226,7 @@ impl CPU {
                     self.registers.set_variable(i, *value);
                 }
             }
-            _ => { panic!("Tried to run instruction at {:?}", self.pc.get()); }
+            _ => { panic!("Tried to run instruction at {:?}; found {:?}", self.pc.get(), instruction); }
         };
     } // TODO
 
