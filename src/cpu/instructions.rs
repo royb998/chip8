@@ -73,7 +73,7 @@ impl Instruction {
             // 0x8 => {} // TODO: Arithmetic instructions
             0x9 => { SRNE(x, y) }
             0xa => { SETN(imm12) }
-            // 0xb => {} // TODO: Jump offset
+            0xb => { JMPO(address) }
             0xc => { RAND(x, imm8) }
             0xd => { DRAW(x, y, imm4) }
             // 0xe => {} // TODO: Skip if Key

@@ -67,6 +67,32 @@ impl CPU {
                 self.stack.push(self.pc.get());
                 self.pc.set(addr);
             }
+            Instruction::SEQ(x, imm) => {
+                let value = self.registers.get_variable(x);
+                if imm == value {
+                    self.pc.increment();
+                }
+            }
+            Instruction::SNE(x, imm) => {
+                let value = self.registers.get_variable(x);
+                if imm != value {
+                    self.pc.increment();
+                }
+            }
+            Instruction::SRE(x, y) => {
+                let a = self.registers.get_variable(x);
+                let b = self.registers.get_variable(y);
+                if a == b {
+                    self.pc.increment();
+                }
+            }
+            Instruction::SRNE(x, y) => {
+                let a = self.registers.get_variable(x);
+                let b = self.registers.get_variable(y);
+                if a != b {
+                    self.pc.increment();
+                }
+            }
             Instruction::SETI(x, imm) => {
                 self.registers.set_variable(x, imm);
             }
@@ -78,6 +104,12 @@ impl CPU {
             Instruction::SETN(imm) => {
                 let addr = Address::from(imm as usize);
                 self.registers.set_index(addr);
+            }
+            Instruction::JMPO(addr) => {
+                let offset = self.registers.get_variable(0) as usize;
+                let target = addr.get();
+                let new = Address::from(target + offset);
+                self.pc.set(new);
             }
             Instruction::RAND(x, imm) => {
                 let value = rand::thread_rng().gen_range(0..=0xFF);
