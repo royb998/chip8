@@ -33,6 +33,16 @@ pub enum Instruction {
     SETN(Imm12),
     ADDN(Reg),
 
+    // Arithmetics:
+    SET(Reg, Reg),
+    OR(Reg, Reg),
+    AND(Reg, Reg),
+    XOR(Reg, Reg),
+    ADD(Reg, Reg), // with carry to vf
+    SUB(Reg, Reg), // Use with each direction. carry if a > b for (a - b)
+    SHL(Reg, Reg),
+    SHR(Reg, Reg),
+
     // Timers
     STD(Reg),
     RDD(Reg),
@@ -70,7 +80,20 @@ impl Instruction {
             0x5 => { SRE(x, y) }
             0x6 => { SETI(x, imm8) }
             0x7 => { ADDI(x, imm8) }
-            // 0x8 => {} // TODO: Arithmetic instructions
+            0x8 => {
+                match imm4 {
+                    0x0 => { SET(x, y) }
+                    0x1 => { OR(x, y) }
+                    0x2 => { AND(x, y) }
+                    0x3 => { XOR(x, y) }
+                    0x4 => { ADD(x, y) }
+                    0x5 => { SUB(x, y) }
+                    0x7 => { SUB(y, x) }
+                    0x6 => { SHR(x, y) }
+                    0xe => { SHL(x, y) }
+                    _ => { INVALID() }
+                }
+            }
             0x9 => { SRNE(x, y) }
             0xa => { SETN(imm12) }
             0xb => { JMPO(address) }

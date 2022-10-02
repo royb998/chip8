@@ -4,8 +4,8 @@ pub mod instructions;
 
 // ----- Imports ----- //
 
-// use std::thread::sleep;
-// use std::time::Duration;
+use std::thread::sleep;
+use std::time::Duration;
 use rand::Rng;
 
 use crate::cpu::instructions::Instruction;
@@ -18,7 +18,7 @@ use crate::timers::Timer;
 
 // ----- Consts ----- //
 
-// const INSTRUCTION_PAUSE: Duration = Duration::from_micros(1400);
+const INSTRUCTION_PAUSE: Duration = Duration::from_micros(1400);
 
 // ----- Structs ----- //
 
@@ -97,13 +97,60 @@ impl CPU {
                 self.registers.set_variable(x, imm);
             }
             Instruction::ADDI(x, imm) => {
-                let current = self.registers.get_variable(x);
-                let new = current + imm;
+                let current = self.registers.get_variable(x) as u16;
+                let new = (current + imm as u16) as u8;
                 self.registers.set_variable(x, new);
             }
             Instruction::SETN(imm) => {
                 let addr = Address::from(imm as usize);
                 self.registers.set_index(addr);
+            }
+            Instruction::SET(x, y) => {
+                let value = self.registers.get_variable(y);
+                self.registers.set_variable(x, value);
+            }
+            Instruction::OR(x, y) => {
+                let a = self.registers.get_variable(x);
+                let b = self.registers.get_variable(y);
+                self.registers.set_variable(x, a | b);
+            }
+            Instruction::AND(x, y) => {
+                let a = self.registers.get_variable(x);
+                let b = self.registers.get_variable(y);
+                self.registers.set_variable(x, a & b);
+            }
+            Instruction::XOR(x, y) => {
+                let a = self.registers.get_variable(x);
+                let b = self.registers.get_variable(y);
+                self.registers.set_variable(x, a ^ b);
+            }
+            Instruction::ADD(x, y) => {
+                let a = self.registers.get_variable(x) as u16;
+                let b = self.registers.get_variable(y) as u16;
+                let result = a + b;
+
+                self.registers.set_flag(result > 0xFF);
+                self.registers.set_variable(x, result as u8);
+            }
+            Instruction::SUB(x, y) => {
+                let a = 0x0100 + self.registers.get_variable(x) as u16;
+                let b = self.registers.get_variable(y) as u16;
+                let mut result = a - b;
+
+                self.registers.set_flag(result & 0x0100 > 0);
+                self.registers.set_variable(x, result as u8);
+            }
+            Instruction::SHR(x, y) => {
+                let value = self.registers.get_variable(y);
+
+                self.registers.set_flag((value & 0x01) > 0);
+                self.registers.set_variable(x, value >> 1);
+            }
+            Instruction::SHL(x, y) => {
+                let value = self.registers.get_variable(y);
+
+                self.registers.set_flag((value & 0x80) > 0);
+                self.registers.set_variable(x, value << 1);
             }
             Instruction::JMPO(addr) => {
                 let offset = self.registers.get_variable(0) as usize;
@@ -135,7 +182,9 @@ impl CPU {
                 let value = self.registers.get_variable(x);
                 self.sound_timer.set(value);
             }
-            _ => { assert!(false) }
+            _ => {
+                println!("{:?}", instruction);
+                assert!(false) }
         };
     } // TODO
 
@@ -151,7 +200,7 @@ impl CPU {
     pub fn run(&mut self) {
         loop {
             self.cycle();
-            // sleep(INSTRUCTION_PAUSE);
+            sleep(INSTRUCTION_PAUSE);
         }
     }
 
