@@ -226,7 +226,7 @@ impl CPU {
                     self.registers.set_variable(i, *value);
                 }
             }
-            _ => { panic!("Tried to run instruction at {:?}; found {:?}", self.pc.get(), instruction); }
+            _ => { panic!("Tried to run instruction at {}; found {}", self.pc.get(), instruction); }
         };
     } // TODO
 

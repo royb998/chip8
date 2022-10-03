@@ -1,5 +1,6 @@
 // ----- Imports ----- //
 
+use std::fmt::Formatter;
 use crate::cpu::instructions::Instruction::{*};
 use crate::memory::address::Address;
 
@@ -12,7 +13,6 @@ type Imm12 = u16;
 
 // ----- Structs ----- //
 
-#[derive(Debug)]
 pub enum Instruction {
     CLS(),
 
@@ -117,6 +117,44 @@ impl Instruction {
                 }
             }
             _ => { INVALID(opcode) }
+        }
+    }
+}
+
+impl std::fmt::Display for Instruction {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CLS() => { write!(f, "CLS()") }
+            RET() => { write!(f, "RET()") }
+            JUMP(addr) => { write!(f, "JUMP({:03x})", addr.get()) }
+            CALL(addr) => { write!(f, "CALL({:03x})", addr.get()) }
+            SEQ(x, imm) => { write!(f, "SEQ(v{:x}, {:02x})", x, imm) }
+            SNE(x, imm) => { write!(f, "SNE(v{:x}, {:02x})", x, imm) }
+            SRE(x, y) => { write!(f, "SRE(v{:x}, v{:x})", x, y) }
+            SRNE(x, y) => { write!(f, "SRNE(v{:x}, v{:x})", x, y) }
+            SETI(x, imm) => { write!(f, "SETI(v{:x}, {:02x})", x, imm) }
+            ADDI(x, imm) => { write!(f, "ADDI(v{:x}, {:02x})", x, imm) }
+            SETN(addr) => { write!(f, "SETN({:03x})", addr.get()) }
+            SET(x, y) => { write!(f, "SET(v{:x}, v{:x})", x, y) }
+            OR(x, y) => { write!(f, "OR(v{:x}, v{:x})", x, y) }
+            AND(x, y) => { write!(f, "AND(v{:x}, v{:x})", x, y) }
+            XOR(x, y) => { write!(f, "XOR(v{:x}, v{:x})", x, y) }
+            ADD(x, y) => { write!(f, "ADD(v{:x}, v{:x})", x, y) }
+            SUB(x, y) => { write!(f, "SUB(v{:x}, v{:x})", x, y) }
+            SHR(x, y) => { write!(f, "SHR(v{:x}, v{:x})", x, y) }
+            SHL(x, y) => { write!(f, "SHL(v{:x}, v{:x})", x, y) }
+            JMPO(addr) => { write!(f, "JMPO({:03x})", addr.get()) }
+            RAND(x, imm) => { write!(f, "RAND(v{:x}, {:02x})", x, imm) }
+            DRAW(x, y, n) => { write!(f, "DRAW(v{:x}, v{:x}, {:x})", x, y, n) }
+            ADDN(x) => { write!(f, "ADDN(v{:x})", x) }
+            RDD(x) => { write!(f, "RDD(v{:x})", x) }
+            STD(x) => { write!(f, "STD(v{:x})", x) }
+            STS(x) => { write!(f, "STS(v{:x})", x) }
+            FONT(x) => { write!(f, "FONT(v{:x})", x) }
+            BCD(x) => { write!(f, "BCD(v{:x})", x) }
+            STM(x) => { write!(f, "STM(v{:x})", x) }
+            LDM(x) => { write!(f, "LDM(v{:x})", x) }
+            INVALID(opcode) => { write!(f, "INVALID({:04x})", opcode) }
         }
     }
 }
