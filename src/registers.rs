@@ -87,4 +87,14 @@ impl PC {
         }
         self.value = Address::from(new);
     }
+
+    pub fn decrement(&mut self) {
+        let current = self.value.get();
+        let new = current - 2;
+
+        if new >= MAX_ADDRESS {
+            panic!("Reached end of memory");
+        }
+        self.value = Address::from(new);
+    }
 }

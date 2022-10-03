@@ -10,7 +10,7 @@ use rand::Rng;
 
 use crate::cpu::instructions::Instruction;
 use crate::display::{Display, Sprite};
-use crate::memory;
+use crate::{keyboard, memory};
 use crate::memory::address::Address;
 use crate::memory::Memory;
 use crate::registers::{PC, Registers};
@@ -163,7 +163,37 @@ impl CPU {
                 self.registers.set_variable(x, value & imm);
             }
             Instruction::DRAW(x, y, n) => { self.draw(x, y, n); }
+            Instruction::SKE(x) => {
+                let value = self.registers.get_variable(x) & 0x0F;
+                let key = keyboard::Key::from(value);
 
+                if let Some(pressed) = keyboard::get_key() {
+                    if pressed == key {
+                        self.pc.increment();
+                    }
+                }
+            }
+            Instruction::SKN(x) => {
+                let value = self.registers.get_variable(x) & 0x0F;
+                let key = keyboard::Key::from(value);
+
+                if let Some(pressed) = keyboard::get_key() {
+                    if pressed == key {
+                        return;
+                    }
+                }
+                self.pc.increment();
+            }
+            Instruction::GTK(x) => {
+                if let Some(key) = keyboard::get_key() {
+                    let value = key.get();
+                    if value != keyboard::INVALID_KEY {
+                        self.registers.set_variable(x, key.get());
+                        return;
+                    }
+                }
+                self.pc.decrement();
+            }
             Instruction::ADDN(x) => {
                 let index = self.registers.get_index();
                 let x = self.registers.get_variable(x);

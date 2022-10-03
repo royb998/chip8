@@ -2,6 +2,7 @@
 
 mod cpu;
 mod display;
+mod keyboard;
 mod memory;
 mod registers;
 mod stack;

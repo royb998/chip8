@@ -49,6 +49,12 @@ pub enum Instruction {
 
     RAND(Reg, Imm8),
     DRAW(Reg, Reg, Imm4),
+
+    // Key input
+    SKE(Reg),
+    SKN(Reg),
+    GTK(Reg),
+
     FONT(Reg),
     BCD(Reg),
     STM(Reg),
@@ -70,9 +76,9 @@ impl Instruction {
 
         match inst_group {
             0x0 => {
-                match opcode {
-                    0x00E0 => { CLS() }
-                    0x00EE => { RET() }
+                match imm12 {
+                    0x0E0 => { CLS() }
+                    0x0EE => { RET() }
                     _ => { INVALID(opcode) }
                 }
             }
@@ -102,11 +108,18 @@ impl Instruction {
             0xb => { JMPO(address) }
             0xc => { RAND(x, imm8) }
             0xd => { DRAW(x, y, imm4) }
-            // 0xe => {} // TODO: Skip if Key
+            0xe => {
+                match imm8 {
+                    0x9e => { SKE(x) }
+                    0xa1 => { SKN(x) }
+                    _ => { INVALID(opcode) }
+                }
+            }
             0xf => {
                 match imm8 {
                     0x1e => { ADDN(x) }
                     0x07 => { RDD(x) }
+                    0x0a => { GTK(x) }
                     0x15 => { STD(x) }
                     0x18 => { STS(x) }
                     0x29 => { FONT(x) }
@@ -154,6 +167,9 @@ impl std::fmt::Display for Instruction {
             BCD(x) => { write!(f, "BCD(v{:x})", x) }
             STM(x) => { write!(f, "STM(v{:x})", x) }
             LDM(x) => { write!(f, "LDM(v{:x})", x) }
+            SKE(x) => { write!(f, "SKE(v{:x})", x) }
+            SKN(x) => { write!(f, "SKN(v{:x})", x) }
+            GTK(x) => { write!(f, "GTK(v{:x})", x) }
             INVALID(opcode) => { write!(f, "INVALID({:04x})", opcode) }
         }
     }

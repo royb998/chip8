@@ -17,12 +17,14 @@ impl Address {
         return Address { value: (addr & 0x0FFF) as usize };
     }
 
-    pub fn clone(&self) -> Address {
-        return Address::from(self.value);
-    }
-
     pub fn get(&self) -> usize {
         return self.value;
+    }
+}
+
+impl Clone for Address {
+    fn clone(&self) -> Self {
+        Address::from(self.get())
     }
 }
 
