@@ -98,7 +98,7 @@ impl Instruction {
                     0x3 => { XOR(x, y) }
                     0x4 => { ADD(x, y) }
                     0x5 => { SUB(x, y) }
-                    0x7 => { NSUB(y, x) }
+                    0x7 => { NSUB(x, y) }
                     0x6 => { SHR(x, y) }
                     0xe => { SHL(x, y) }
                     _ => { INVALID(opcode) }
