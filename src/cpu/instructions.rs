@@ -39,6 +39,7 @@ pub enum Instruction {
     XOR(Reg, Reg),
     ADD(Reg, Reg),
     SUB(Reg, Reg),
+    NSUB(Reg, Reg),
     SHL(Reg, Reg),
     SHR(Reg, Reg),
 
@@ -97,7 +98,7 @@ impl Instruction {
                     0x3 => { XOR(x, y) }
                     0x4 => { ADD(x, y) }
                     0x5 => { SUB(x, y) }
-                    0x7 => { SUB(y, x) }
+                    0x7 => { NSUB(y, x) }
                     0x6 => { SHR(x, y) }
                     0xe => { SHL(x, y) }
                     _ => { INVALID(opcode) }
@@ -154,6 +155,7 @@ impl std::fmt::Display for Instruction {
             XOR(x, y) => { write!(f, "XOR(v{:x}, v{:x})", x, y) }
             ADD(x, y) => { write!(f, "ADD(v{:x}, v{:x})", x, y) }
             SUB(x, y) => { write!(f, "SUB(v{:x}, v{:x})", x, y) }
+            NSUB(x, y) => { write!(f, "NSUB(v{:x}, v{:x})", x, y) }
             SHR(x, y) => { write!(f, "SHR(v{:x}, v{:x})", x, y) }
             SHL(x, y) => { write!(f, "SHL(v{:x}, v{:x})", x, y) }
             JMPO(addr) => { write!(f, "JMPO({:03x})", addr.get()) }

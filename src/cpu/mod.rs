@@ -140,6 +140,14 @@ impl CPU {
                 self.registers.set_flag(result & 0x0100 > 0);
                 self.registers.set_variable(x, result as u8);
             }
+            Instruction::NSUB(x, y) => {
+                let a = 0x0100 + self.registers.get_variable(y) as u16;
+                let b = self.registers.get_variable(x) as u16;
+                let result = a - b;
+
+                self.registers.set_flag(result & 0x0100 > 0);
+                self.registers.set_variable(x, result as u8);
+            }
             Instruction::SHR(x, y) => {
                 let value = self.registers.get_variable(y);
 
