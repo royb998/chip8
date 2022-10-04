@@ -1,0 +1,34 @@
+
+seti v4, 0
+
+_l_start:
+call _p_print
+gtk v5
+sne v5, 2
+addi v6, 1
+sne v5, 8
+addi v6, FF
+ske v5, 05
+jump _l_start
+std v6
+rdd v6
+call _p_print
+seq v6, 0
+jump 214
+jump _l_start
+
+_p_print:
+cls
+setn 23a
+bcd v6
+ldm v2
+seti v3, 0
+font v0
+draw v3, v4, 5
+addi v3, 5
+font v1
+draw v3, v4, 5
+addi v3, 5
+font v2
+draw v3, v4, 5
+ret
