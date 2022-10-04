@@ -2,7 +2,6 @@
 
 use std::io::stdout;
 use crossterm::{cursor, execute, style, terminal};
-use crate::cmd;
 
 // ----- Consts ----- //
 
