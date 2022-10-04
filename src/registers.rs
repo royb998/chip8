@@ -54,10 +54,6 @@ impl Registers {
         self.i = value;
     }
 
-    pub fn get_flag(&self) -> bool {
-        return self.v[FLAG_INDEX] > 0;
-    }
-
     pub fn set_flag(&mut self, value: bool) {
         self.v[FLAG_INDEX] = value as u8;
     }
