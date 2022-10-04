@@ -1,13 +1,31 @@
 // ----- Imports ----- //
 
 use std::fmt::{Display, Formatter};
-use std::time::Duration;
-use crossterm::event::{Event, KeyCode, KeyEventKind};
+use device_query::{DeviceQuery, DeviceState, Keycode};
 
 // ----- Consts ----- //
 
 pub const MAX_KEY: u8 = 0x0F;
 pub const INVALID_KEY: u8 = 0xFF;
+
+pub const VALID_KEYS: [Keycode; 0x10] = [
+    Keycode::Key1,
+    Keycode::Key2,
+    Keycode::Key3,
+    Keycode::Key4,
+    Keycode::Q,
+    Keycode::W,
+    Keycode::E,
+    Keycode::R,
+    Keycode::A,
+    Keycode::S,
+    Keycode::D,
+    Keycode::F,
+    Keycode::Z,
+    Keycode::X,
+    Keycode::C,
+    Keycode::V,
+];
 
 // ----- Structs ----- //
 
@@ -31,25 +49,25 @@ impl From<u8> for Key {
     }
 }
 
-impl From<KeyCode> for Key {
-    fn from(value: KeyCode) -> Self {
+impl From<Keycode> for Key {
+    fn from(value: Keycode) -> Self {
         match value {
-            KeyCode::Char('1') => { Key { value: 0x1 } }
-            KeyCode::Char('2') => { Key { value: 0x2 } }
-            KeyCode::Char('3') => { Key { value: 0x3 } }
-            KeyCode::Char('4') => { Key { value: 0xC } }
-            KeyCode::Char('q') => { Key { value: 0x4 } }
-            KeyCode::Char('w') => { Key { value: 0x5 } }
-            KeyCode::Char('e') => { Key { value: 0x6 } }
-            KeyCode::Char('r') => { Key { value: 0xD } }
-            KeyCode::Char('a') => { Key { value: 0x7 } }
-            KeyCode::Char('s') => { Key { value: 0x8 } }
-            KeyCode::Char('d') => { Key { value: 0x9 } }
-            KeyCode::Char('f') => { Key { value: 0xE } }
-            KeyCode::Char('z') => { Key { value: 0xA } }
-            KeyCode::Char('x') => { Key { value: 0x0 } }
-            KeyCode::Char('c') => { Key { value: 0xB } }
-            KeyCode::Char('v') => { Key { value: 0xF } }
+            Keycode::Key1 => { Key { value: 0x1 } }
+            Keycode::Key2 => { Key { value: 0x2 } }
+            Keycode::Key3 => { Key { value: 0x3 } }
+            Keycode::Key4 => { Key { value: 0xC } }
+            Keycode::Q => { Key { value: 0x4 } }
+            Keycode::W => { Key { value: 0x5 } }
+            Keycode::E => { Key { value: 0x6 } }
+            Keycode::R => { Key { value: 0xD } }
+            Keycode::A => { Key { value: 0x7 } }
+            Keycode::S => { Key { value: 0x8 } }
+            Keycode::D => { Key { value: 0x9 } }
+            Keycode::F => { Key { value: 0xE } }
+            Keycode::Z => { Key { value: 0xA } }
+            Keycode::X => { Key { value: 0x0 } }
+            Keycode::C => { Key { value: 0xB } }
+            Keycode::V => { Key { value: 0xF } }
             _ => { Key { value: INVALID_KEY } }
         }
     }
@@ -66,17 +84,13 @@ impl Display for Key {
 }
 
 pub fn get_key() -> Option<Key> {
-    let no_wait = Duration::from_secs(0);
-    if let Ok(status) = crossterm::event::poll(no_wait) {
-        if status {
-            let event = crossterm::event::read().unwrap();
-            if let Event::Key(ke) = event {
-                if ke.kind == KeyEventKind::Press  {
-                    return Some(Key::from(ke.code));
-                }
-            }
-        }
+    let ds = DeviceState::new();
+    let keys = ds.get_keys();
+    let filtered = keys.iter().filter(|key| VALID_KEYS.contains(key));
+
+    if let Some(code) = filtered.last() {
+        return Some(Key::from(*code));
     }
 
-    return None;
+    None
 }

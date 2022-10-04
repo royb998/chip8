@@ -4,8 +4,6 @@ pub mod instructions;
 
 // ----- Imports ----- //
 
-use std::thread::sleep;
-use std::time::Duration;
 use rand::Rng;
 
 use crate::cpu::instructions::Instruction;
@@ -16,10 +14,6 @@ use crate::memory::Memory;
 use crate::registers::{PC, Registers};
 use crate::stack::Stack;
 use crate::timers::Timer;
-
-// ----- Consts ----- //
-
-const INSTRUCTION_PAUSE: Duration = Duration::from_micros(1400);
 
 // ----- Structs ----- //
 
@@ -280,7 +274,6 @@ impl CPU {
     pub fn run(&mut self) {
         loop {
             self.cycle();
-            sleep(INSTRUCTION_PAUSE);
         }
     }
 
