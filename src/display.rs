@@ -1,6 +1,8 @@
 // ----- Imports ----- //
 
-use std::process::Command;
+use std::io::stdout;
+use crossterm::{cursor, execute, style, terminal};
+use crate::cmd;
 
 // ----- Consts ----- //
 
@@ -28,26 +30,10 @@ impl Display {
         };
     }
 
-    pub fn show(&self) {
-        let _ = Command::new("clear").status();  // TODO: Handle possible error?
-        for row in self.grid.iter() {
-            for pixel in row.iter() {
-                if *pixel {
-                    print!("█");
-                } else {
-                    print!(" ");
-                }
-            }
-            println!();
-        }
-    }
-
     pub fn clear(&mut self) {
-        for row in 0..DISPLAY_HEIGHT {
-            for col in 0..DISPLAY_WIDTH {
-                self.grid[row][col] = false;
-            }
-        }
+        let _ = execute!(stdout(), terminal::Clear(terminal::ClearType::All));
+        drop(self.grid);
+        self.grid = [[false; DISPLAY_WIDTH]; DISPLAY_HEIGHT];
     }
 
     /// Add the given sprite to the display.
@@ -56,21 +42,30 @@ impl Display {
     ///
     /// Returns `true` if any operation resulted in a pixel getting turned off,
     /// `false` otherwise.
-    pub fn add_sprite(&mut self, sprite: &Sprite, x: usize, y: usize) -> bool {
-        let true_x = x % DISPLAY_WIDTH;
-        let true_y = y % DISPLAY_HEIGHT;
+    pub fn add_sprite(&mut self, sprite: &Sprite, mut x: usize, mut y: usize) -> bool {
+        x = x % DISPLAY_WIDTH;
+        y = y % DISPLAY_HEIGHT;
         let mut result = false;
 
         for i in 0..SPRITE_WIDTH {
-            if true_x + i >= DISPLAY_WIDTH { break; }
+            if x + i >= DISPLAY_WIDTH { break; }
 
             for j in 0..SPRITE_HEIGHT {
-                if true_y + j >= DISPLAY_HEIGHT { break; }
+                if y + j >= DISPLAY_HEIGHT { break; }
 
-                let current = self.grid[true_y + j][true_x + i];
+                let current = self.grid[y + j][x + i];
                 let pixel = sprite.get_pixel(i, j);
                 result |= current & pixel;
-                self.grid[true_y + j][true_x + i] = current ^ pixel;
+                self.grid[y + j][x + i] = current ^ pixel;
+
+                if pixel {
+                    let mut s = String::from("█");
+                    if !current ^ pixel {
+                        s = String::from(" ");
+                    }
+                    let moveto = cursor::MoveTo((x + i) as u16, (y + j) as u16);
+                    let _ = execute!(stdout(), moveto, style::Print(s));
+                }
             }
         }
         return result;

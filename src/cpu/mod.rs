@@ -288,6 +288,5 @@ impl CPU {
         self.registers.set_flag(false);
         let overflow = self.display.add_sprite(&sprite, x as usize, y as usize);
         self.registers.set_flag(overflow);
-        self.display.show();
     }
 }
