@@ -55,11 +55,11 @@ impl CPU {
         match instruction {
             Instruction::CLS() => { self.display.clear(); }
             Instruction::RET() => {
-                self.pc.set(self.stack.pop());
+                self.pc.set(self.stack.pop(&self.memory));
             }
             Instruction::JUMP(addr) => { self.pc.set(addr); }
             Instruction::CALL(addr) => {
-                self.stack.push(self.pc.get());
+                self.stack.push(self.pc.get(), &mut self.memory);
                 self.pc.set(addr);
             }
             Instruction::SEQ(x, imm) => {
