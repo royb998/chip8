@@ -61,8 +61,6 @@ impl Memory {
         let mut len: usize = 0;
         let index = address.get();
 
-        // TODO: Raise error upon invalid address?
-
         for (i, byte) in data.iter().enumerate() {
             if index + i > MEMORY_SIZE {
                 break;

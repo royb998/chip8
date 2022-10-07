@@ -26,7 +26,7 @@ impl From<usize> for Address {
 
 impl Clone for Address {
     fn clone(&self) -> Self {
-        Address::from(self.get())
+        Address{ ..*self }
     }
 }
 

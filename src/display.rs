@@ -29,9 +29,9 @@ impl Display {
         };
     }
 
+    /// Clear the display, turning all pixels off.
     pub fn clear(&mut self) {
         let _ = execute!(stdout(), terminal::Clear(terminal::ClearType::All));
-        drop(self.grid);
         self.grid = [[false; DISPLAY_WIDTH]; DISPLAY_HEIGHT];
     }
 

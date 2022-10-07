@@ -260,7 +260,7 @@ impl CPU {
             }
             _ => { panic!("Tried to run instruction at {}; found {}", self.pc.get(), instruction); }
         };
-    } // TODO
+    }
 
     /// Perform one operation cycle (fetch-decode-execute).
     fn cycle(&mut self) {

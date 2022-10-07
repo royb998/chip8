@@ -29,19 +29,13 @@ impl Registers {
     }
 
     pub fn get_variable(&self, index: usize) -> u8 {
-        // TODO: Raise error in case of invalid index.
-        if index >= VARIABLE_COUNT {
-            return 0xFF;
-        }
+        assert!(index < self.v.len());
 
         return self.v[index];
     }
 
     pub fn set_variable(&mut self, index: usize, value: u8) {
-        // TODO: Raise error in case of invalid index.
-        if index >= VARIABLE_COUNT {
-            return;
-        }
+        assert!(index < self.v.len());
 
         self.v[index] = value;
     }
