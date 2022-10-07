@@ -1,5 +1,7 @@
 // ----- Imports ----- //
 
+use std::cell::RefCell;
+use std::rc::Rc;
 use crate::memory::address::Address;
 use crate::memory::Memory;
 
@@ -13,16 +15,18 @@ const ADDRESS_SIZE: usize = 2;
 
 pub struct Stack {
     size: usize,
+    memory: Rc<RefCell<Memory>>,
 }
 
 impl Stack {
-    pub fn new() -> Self {
+    pub fn new(memory: Rc<RefCell<Memory>>) -> Self {
         return Stack {
             size: 0,
+            memory,
         };
     }
 
-    pub fn push(&mut self, address: Address, memory: &mut Memory) {
+    pub fn push(&mut self, address: Address) {
         if self.size >= STACK_SIZE {
             panic!("Stack overflow! Call stack is full.");
         }
@@ -33,17 +37,18 @@ impl Stack {
             (address_value & 0xFF) as u8,
             ((address_value >> 8) & 0xFF) as u8,
         ];
-        memory.write(write_addr, &address_data);
+        self.memory.borrow_mut().write(write_addr, &address_data);
         self.size += 1;
     }
 
-    pub fn pop(&mut self, memory: &Memory) -> Address {
+    pub fn pop(&mut self) -> Address {
         if self.size == 0 {
             panic!("Call stack is empty.");
         }
 
         self.size -= 1;
         let read_address = Address::from(STACK_BASE + (self.size * STACK_SIZE));
+        let memory = self.memory.borrow();
         let address_data = memory.read(read_address, ADDRESS_SIZE);
         let output_value = (address_data[0] as usize) | ((address_data[1] as usize) << 8);
 

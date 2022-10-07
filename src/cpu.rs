@@ -4,6 +4,8 @@ pub mod instructions;
 
 // ----- Imports ----- //
 
+use std::cell::RefCell;
+use std::rc::Rc;
 use rand::Rng;
 
 use crate::cpu::instructions::Instruction;
@@ -19,7 +21,7 @@ use crate::timers::Timer;
 
 pub struct CPU {
     display: Display,
-    memory: Memory,
+    memory: Rc<RefCell<Memory>>,
     stack: Stack,
     registers: Registers,
     pc: PC,
@@ -29,10 +31,12 @@ pub struct CPU {
 
 impl CPU {
     pub fn new(exe_path: &str) -> Self {
+        let memory = Rc::new(RefCell::new(Memory::new(exe_path)));
+
         CPU {
             display: Display::new(),
-            memory: Memory::new(exe_path),
-            stack: Stack::new(),
+            memory: Rc::clone(&memory),
+            stack: Stack::new(Rc::clone(&memory)),
             registers: Registers::new(),
             pc: PC::new(),
             delay_timer: Timer::new(),
@@ -43,7 +47,7 @@ impl CPU {
     /// Fetch the next opcode from the memory.
     fn fetch(&mut self) -> u16 {
         let cur = self.pc.get();
-        let data = self.memory.read(cur, 2);
+        let data = self.memory.borrow().read(cur, 2);
         assert_eq!(data.len(), 2);
 
         self.pc.increment();
@@ -55,11 +59,11 @@ impl CPU {
         match instruction {
             Instruction::CLS() => { self.display.clear(); }
             Instruction::RET() => {
-                self.pc.set(self.stack.pop(&self.memory));
+                self.pc.set(self.stack.pop());
             }
             Instruction::JUMP(addr) => { self.pc.set(addr); }
             Instruction::CALL(addr) => {
-                self.stack.push(self.pc.get(), &mut self.memory);
+                self.stack.push(self.pc.get());
                 self.pc.set(addr);
             }
             Instruction::SEQ(x, imm) => {
@@ -231,7 +235,7 @@ impl CPU {
                 }
 
                 let address = self.registers.get_index();
-                self.memory.write(address, &digits);
+                self.memory.borrow_mut().write(address, &digits);
             }
             Instruction::STM(x) => {
                 let mut data: Vec<u8> = Vec::new();
@@ -244,14 +248,14 @@ impl CPU {
                 // let new = Address::from(address.get() + x as usize + 1);
                 // self.registers.set_index(new);
 
-                self.memory.write(address, &data);
+                self.memory.borrow_mut().write(address, &data);
             }
             Instruction::LDM(x) => {
                 let address = self.registers.get_index();
                 // let new = Address::from(address.get() + x as usize + 1);
                 // self.registers.set_index(new);
 
-                let data = self.memory.read(address, x + 1);
+                let data = self.memory.borrow().read(address, x + 1);
                 assert_eq!(data.len(), x + 1);
 
                 for (i, value) in data.iter().enumerate() {
@@ -279,7 +283,7 @@ impl CPU {
     fn draw(&mut self, x_reg: usize, y_reg: usize, height: u8) {
         assert!(height <= 15);
         let addr = self.registers.get_index();
-        let sprite_data = self.memory.read(addr, height as usize);
+        let sprite_data = self.memory.borrow().read(addr, height as usize);
         let sprite = Sprite::from(sprite_data);
         let x = self.registers.get_variable(x_reg);
         let y = self.registers.get_variable(y_reg);
