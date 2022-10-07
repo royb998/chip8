@@ -14,7 +14,7 @@ pub struct Timer {
 }
 
 impl Timer {
-    pub fn new() -> Timer {
+    pub fn new() -> Self {
         let value = Arc::new(Mutex::new(0));
         let other = value.clone();
         thread::spawn(|| count(other));

@@ -9,7 +9,7 @@ pub struct Stack {
 }
 
 impl Stack {
-    pub fn new() -> Stack {
+    pub fn new() -> Self {
         return Stack { values: Vec::new() };
     }
 

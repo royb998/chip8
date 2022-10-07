@@ -21,7 +21,7 @@ pub struct PC {
 }
 
 impl Registers {
-    pub fn new() -> Registers {
+    pub fn new() -> Self {
         return Registers {
             i: Address::from(0),
             v: [0; VARIABLE_COUNT],
@@ -60,7 +60,7 @@ impl Registers {
 }
 
 impl PC {
-    pub fn new() -> PC {
+    pub fn new() -> Self {
         return PC {
             value: Address::from(INITIAL_PC),
         };

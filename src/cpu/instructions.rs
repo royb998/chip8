@@ -64,8 +64,8 @@ pub enum Instruction {
     INVALID(u16),
 }
 
-impl Instruction {
-    pub fn from(opcode: u16) -> Instruction {
+impl From<u16> for Instruction {
+    fn from(opcode: u16) -> Self {
         // Get all possible values from opcode.
         let inst_group = (opcode >> 12) & 0x0F;
         let imm4: Imm4 = (opcode & 0x0F) as u8;

@@ -22,7 +22,7 @@ pub struct Memory {
 }
 
 impl Memory {
-    pub fn new(exe_path: &str) -> Memory {
+    pub fn new(exe_path: &str) -> Self {
         let mut result = Memory {
             buffer: [0; MEMORY_SIZE]
         };

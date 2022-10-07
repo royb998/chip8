@@ -28,7 +28,7 @@ pub struct CPU {
 }
 
 impl CPU {
-    pub fn new(exe_path: &str) -> CPU {
+    pub fn new(exe_path: &str) -> Self {
         CPU {
             display: Display::new(),
             memory: Memory::new(exe_path),

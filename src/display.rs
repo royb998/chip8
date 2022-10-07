@@ -23,7 +23,7 @@ pub struct Sprite {
 }
 
 impl Display {
-    pub fn new() -> Display {
+    pub fn new() -> Self {
         return Display {
             grid: [[false; DISPLAY_WIDTH]; DISPLAY_HEIGHT],
         };
@@ -72,15 +72,26 @@ impl Display {
 }
 
 impl Sprite {
-    pub fn from(bytes: Vec<u8>) -> Sprite {
+    pub fn get_pixel(&self, x: usize, y: usize) -> bool {
+        return self.pixels[y][x];
+    }
+}
+
+impl From<Vec<u8>> for Sprite {
+    /// Build a sprite from a list of bytes.
+    /// Each byte represents a whole row of the sprite, and each bit is a single
+    /// pixel, such that `1` is a pixel turned on, and `0` is a pixel turned
+    /// off.
+    /// Allow up to `SPRITE_HEIGHT` rows in a sprite.
+    fn from(bytes: Vec<u8>) -> Self {
         assert!(bytes.len() <= SPRITE_HEIGHT);
 
-        let mut pixels: [[bool; SPRITE_WIDTH]; SPRITE_HEIGHT] = [
-            [false; SPRITE_WIDTH]; SPRITE_HEIGHT
-        ];
+        let mut pixels = [[false; SPRITE_WIDTH]; SPRITE_HEIGHT];
 
         for (i, byte) in bytes.iter().enumerate() {
-            if i >= SPRITE_HEIGHT { break; }
+            if i >= SPRITE_HEIGHT {
+                break;
+            }
 
             for j in 0..SPRITE_WIDTH {
                 pixels[i][SPRITE_WIDTH - j - 1] = (byte & (1 << j)) > 0;
@@ -90,9 +101,5 @@ impl Sprite {
         return Sprite {
             pixels,
         };
-    }
-
-    pub fn get_pixel(&self, x: usize, y: usize) -> bool {
-        return self.pixels[y][x];
     }
 }
