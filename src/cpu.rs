@@ -266,7 +266,6 @@ impl CPU {
     fn cycle(&mut self) {
         let opcode = self.fetch();
         let instruction = Instruction::from(opcode);
-        // TODO: Invalid instruction.
         self.execute(instruction);
     }
 
