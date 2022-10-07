@@ -41,7 +41,7 @@ impl Registers {
     }
 
     pub fn get_index(&self) -> Address {
-        return self.i.clone();
+        return self.i;
     }
 
     pub fn set_index(&mut self, value: Address) {

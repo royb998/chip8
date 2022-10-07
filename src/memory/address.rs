@@ -6,6 +6,7 @@ pub const MAX_ADDRESS: usize = 0x0FFF;
 
 // ----- Structs ----- //
 
+#[derive(Copy, Clone)]
 pub struct Address {
     value: usize,
 }
@@ -21,12 +22,6 @@ impl From<usize> for Address {
     /// and keep the 12-bit value as a valid address.
     fn from(addr: usize) -> Self {
         return Address { value: (addr & 0x0FFF) as usize };
-    }
-}
-
-impl Clone for Address {
-    fn clone(&self) -> Self {
-        Address{ ..*self }
     }
 }
 
