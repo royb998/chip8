@@ -57,25 +57,27 @@ impl Memory {
     /// stop there.
     ///
     /// returns Amount of bytes read.
-    pub fn write(&mut self, address: Address, data: &Vec<u8>) -> usize {
-        let mut len: usize = 0;
-        let index = address.get();
+    pub fn write(&mut self, address: Address, data: &[u8]) -> usize {
+        let mut i: usize = 0;
+        let base_address = address.get();
 
-        for (i, byte) in data.iter().enumerate() {
-            if index + i > MEMORY_SIZE {
+        for &byte in data.iter() {
+            let write_address = base_address + i;
+
+            if write_address >= MEMORY_SIZE {
                 break;
             }
 
-            self.buffer[index + i] = *byte;
-            len += 1;
+            self.buffer[write_address] = byte;
+            i += 1;
         }
 
-        return len;
+        return i;
     }
 
     pub fn load_file(&mut self, address: Address, file_path: &str) {
-        let idk =  fs::read(file_path).expect("Failed to read data.");
+        let data =  fs::read(file_path).expect("Failed to read data.");
 
-        self.write(address, &idk);
+        self.write(address, &data);
     }
 }

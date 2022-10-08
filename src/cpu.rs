@@ -221,14 +221,12 @@ impl CPU {
                 self.registers.set_index(Address::from(i));
             }
             Instruction::BCD(x) => {
-                let mut value = self.registers.get_variable(x);
-                let mut digits: Vec<u8> = Vec::new();
-
-                while value > 0 {
-                    let current = value % 10;
-                    digits.insert(0, current);
-                    value /= 10;
-                }
+                let value = self.registers.get_variable(x);
+                let digits = [
+                    value / 100,
+                    (value / 10) % 10,
+                    value % 10,
+                ];
 
                 let address = self.registers.get_index();
                 self.memory.write(address, &digits);
