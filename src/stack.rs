@@ -33,7 +33,7 @@ impl Stack {
 
         let write_addr = Address::from(STACK_BASE + (self.size * ADDRESS_SIZE));
         let address_value = address.get();
-        let address_data = vec![
+        let address_data = [
             (address_value & 0xFF) as u8,
             ((address_value >> 8) & 0xFF) as u8,
         ];
