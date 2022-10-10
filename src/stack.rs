@@ -47,7 +47,7 @@ impl Stack {
         }
 
         self.size -= 1;
-        let read_address = Address::from(STACK_BASE + (self.size * STACK_SIZE));
+        let read_address = Address::from(STACK_BASE + (self.size * ADDRESS_SIZE));
         let memory = self.memory.borrow();
         let address_data = memory.read(read_address, ADDRESS_SIZE);
         let output_value = (address_data[0] as usize) | ((address_data[1] as usize) << 8);
