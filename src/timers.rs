@@ -2,6 +2,7 @@
 
 use std::{thread, time};
 use std::sync::{Arc, Mutex};
+use spin_sleep::sleep;
 
 // ----- Consts ----- //
 
@@ -34,7 +35,7 @@ impl Timer {
 
 fn count(m: Arc<Mutex<u8>>) {
     loop {
-        thread::sleep(DURATION);
+        sleep(DURATION);
 
         {
             let mut value = m.lock().unwrap();
