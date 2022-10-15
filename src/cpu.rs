@@ -67,116 +67,116 @@ impl CPU {
             Instruction::RET() => {
                 self.pc.set(self.stack.pop());
             }
-            Instruction::JUMP(addr) => { self.pc.set(addr); }
-            Instruction::CALL(addr) => {
+            Instruction::JUMP { address } => { self.pc.set(address); }
+            Instruction::CALL { address } => {
                 self.stack.push(self.pc.get());
-                self.pc.set(addr);
+                self.pc.set(address);
             }
-            Instruction::SEQ(x, imm) => {
-                let value = self.registers.get_variable(x);
-                if imm == value {
+            Instruction::SEQ { reg, imm8 } => {
+                let value = self.registers.get_variable(reg);
+                if imm8 == value {
                     self.pc.increment();
                 }
             }
-            Instruction::SNE(x, imm) => {
-                let value = self.registers.get_variable(x);
-                if imm != value {
+            Instruction::SNE { reg, imm8 } => {
+                let value = self.registers.get_variable(reg);
+                if imm8 != value {
                     self.pc.increment();
                 }
             }
-            Instruction::SRE(x, y) => {
-                let a = self.registers.get_variable(x);
-                let b = self.registers.get_variable(y);
+            Instruction::SRE { reg_x, reg_y } => {
+                let a = self.registers.get_variable(reg_x);
+                let b = self.registers.get_variable(reg_y);
                 if a == b {
                     self.pc.increment();
                 }
             }
-            Instruction::SRNE(x, y) => {
-                let a = self.registers.get_variable(x);
-                let b = self.registers.get_variable(y);
+            Instruction::SRNE { reg_x, reg_y } => {
+                let a = self.registers.get_variable(reg_x);
+                let b = self.registers.get_variable(reg_y);
                 if a != b {
                     self.pc.increment();
                 }
             }
-            Instruction::SETI(x, imm) => {
-                self.registers.set_variable(x, imm);
+            Instruction::SETI { reg, imm8 } => {
+                self.registers.set_variable(reg, imm8);
             }
-            Instruction::ADDI(x, imm) => {
-                let current = self.registers.get_variable(x) as u16;
-                let new = (current + imm as u16) as u8;
-                self.registers.set_variable(x, new);
+            Instruction::ADDI { reg, imm8 } => {
+                let current = self.registers.get_variable(reg) as u16;
+                let new = (current + imm8 as u16) as u8;
+                self.registers.set_variable(reg, new);
             }
-            Instruction::SETN(addr) => {
-                self.registers.set_index(addr);
+            Instruction::SETN { address } => {
+                self.registers.set_index(address);
             }
-            Instruction::SET(x, y) => {
-                let value = self.registers.get_variable(y);
-                self.registers.set_variable(x, value);
+            Instruction::SET { reg_x, reg_y } => {
+                let value = self.registers.get_variable(reg_y);
+                self.registers.set_variable(reg_x, value);
             }
-            Instruction::OR(x, y) => {
-                let a = self.registers.get_variable(x);
-                let b = self.registers.get_variable(y);
-                self.registers.set_variable(x, a | b);
+            Instruction::OR { reg_x, reg_y } => {
+                let a = self.registers.get_variable(reg_x);
+                let b = self.registers.get_variable(reg_y);
+                self.registers.set_variable(reg_x, a | b);
             }
-            Instruction::AND(x, y) => {
-                let a = self.registers.get_variable(x);
-                let b = self.registers.get_variable(y);
-                self.registers.set_variable(x, a & b);
+            Instruction::AND { reg_x, reg_y } => {
+                let a = self.registers.get_variable(reg_x);
+                let b = self.registers.get_variable(reg_y);
+                self.registers.set_variable(reg_x, a & b);
             }
-            Instruction::XOR(x, y) => {
-                let a = self.registers.get_variable(x);
-                let b = self.registers.get_variable(y);
-                self.registers.set_variable(x, a ^ b);
+            Instruction::XOR { reg_x, reg_y } => {
+                let a = self.registers.get_variable(reg_x);
+                let b = self.registers.get_variable(reg_y);
+                self.registers.set_variable(reg_x, a ^ b);
             }
-            Instruction::ADD(x, y) => {
-                let a = self.registers.get_variable(x) as u16;
-                let b = self.registers.get_variable(y) as u16;
+            Instruction::ADD { reg_x, reg_y } => {
+                let a = self.registers.get_variable(reg_x) as u16;
+                let b = self.registers.get_variable(reg_y) as u16;
                 let result = a + b;
 
                 self.registers.set_flag(result > 0xFF);
-                self.registers.set_variable(x, result as u8);
+                self.registers.set_variable(reg_x, result as u8);
             }
-            Instruction::SUB(x, y) => {
-                let a = 0x0100 + self.registers.get_variable(x) as u16;
-                let b = self.registers.get_variable(y) as u16;
+            Instruction::SUB { reg_x, reg_y } => {
+                let a = 0x0100 + self.registers.get_variable(reg_x) as u16;
+                let b = self.registers.get_variable(reg_y) as u16;
                 let result = a - b;
 
                 self.registers.set_flag(result & 0x0100 > 0);
-                self.registers.set_variable(x, result as u8);
+                self.registers.set_variable(reg_x, result as u8);
             }
-            Instruction::NSUB(x, y) => {
-                let a = 0x0100 + self.registers.get_variable(y) as u16;
-                let b = self.registers.get_variable(x) as u16;
+            Instruction::NSUB { reg_x, reg_y } => {
+                let a = 0x0100 + self.registers.get_variable(reg_y) as u16;
+                let b = self.registers.get_variable(reg_x) as u16;
                 let result = a - b;
 
                 self.registers.set_flag(result & 0x0100 > 0);
-                self.registers.set_variable(x, result as u8);
+                self.registers.set_variable(reg_x, result as u8);
             }
-            Instruction::SHR(x, y) => {
-                let value = self.registers.get_variable(y);
+            Instruction::SHR { reg_x, reg_y } => {
+                let value = self.registers.get_variable(reg_y);
 
                 self.registers.set_flag((value & 0x01) > 0);
-                self.registers.set_variable(x, value >> 1);
+                self.registers.set_variable(reg_x, value >> 1);
             }
-            Instruction::SHL(x, y) => {
-                let value = self.registers.get_variable(y);
+            Instruction::SHL { reg_x, reg_y } => {
+                let value = self.registers.get_variable(reg_y);
 
                 self.registers.set_flag((value & 0x80) > 0);
-                self.registers.set_variable(x, value << 1);
+                self.registers.set_variable(reg_x, value << 1);
             }
-            Instruction::JMPO(addr) => {
+            Instruction::JMPO { address } => {
                 let offset = self.registers.get_variable(0) as usize;
-                let target = addr.get();
+                let target = address.get();
                 let new = Address::from(target + offset);
                 self.pc.set(new);
             }
-            Instruction::RAND(x, imm) => {
+            Instruction::RAND { reg, imm8 } => {
                 let value = rand::thread_rng().gen_range(0..=0xFF);
-                self.registers.set_variable(x, value & imm);
+                self.registers.set_variable(reg, value & imm8);
             }
-            Instruction::DRAW(x, y, n) => { self.draw(x, y, n); }
-            Instruction::SKE(x) => {
-                let value = self.registers.get_variable(x) & 0x0F;
+            Instruction::DRAW { reg_x, reg_y, imm4 } => { self.draw(reg_x, reg_y, imm4); }
+            Instruction::SKE { reg } => {
+                let value = self.registers.get_variable(reg) & 0x0F;
                 let key = keyboard::Key::from(value);
 
                 if let Some(pressed) = keyboard::get_key() {
@@ -185,8 +185,8 @@ impl CPU {
                     }
                 }
             }
-            Instruction::SKN(x) => {
-                let value = self.registers.get_variable(x) & 0x0F;
+            Instruction::SKN { reg } => {
+                let value = self.registers.get_variable(reg) & 0x0F;
                 let key = keyboard::Key::from(value);
 
                 if let Some(pressed) = keyboard::get_key() {
@@ -196,42 +196,42 @@ impl CPU {
                 }
                 self.pc.increment();
             }
-            Instruction::GTK(x) => {
+            Instruction::GTK { reg } => {
                 if let Some(key) = keyboard::get_key() {
                     let value = key.get();
                     if value != keyboard::INVALID_KEY {
-                        self.registers.set_variable(x, key.get());
+                        self.registers.set_variable(reg, key.get());
                         return;
                     }
                 }
                 self.pc.decrement();
             }
-            Instruction::ADDN(x) => {
+            Instruction::ADDN { reg } => {
                 let index = self.registers.get_index();
-                let x = self.registers.get_variable(x);
-                let new = index.get() + x as usize;
+                let reg = self.registers.get_variable(reg);
+                let new = index.get() + reg as usize;
                 self.registers.set_index(Address::from(new));
             }
-            Instruction::RDD(x) => {
+            Instruction::RDD { reg } => {
                 let value = self.delay_timer.get();
-                self.registers.set_variable(x, value);
+                self.registers.set_variable(reg, value);
             }
-            Instruction::STD(x) => {
-                let value = self.registers.get_variable(x);
+            Instruction::STD { reg } => {
+                let value = self.registers.get_variable(reg);
                 self.delay_timer.set(value);
             }
-            Instruction::STS(x) => {
-                let value = self.registers.get_variable(x);
+            Instruction::STS { reg } => {
+                let value = self.registers.get_variable(reg);
                 self.sound_timer.set(value);
             }
-            Instruction::FONT(x) => {
+            Instruction::FONT { reg } => {
                 let mut i = memory::FONT_ADDR;
-                let hex = self.registers.get_variable(x) & 0x0F;
+                let hex = self.registers.get_variable(reg) & 0x0F;
                 i += memory::FONT_HEIGHT * (hex as usize);
                 self.registers.set_index(Address::from(i));
             }
-            Instruction::BCD(x) => {
-                let value = self.registers.get_variable(x);
+            Instruction::BCD { reg } => {
+                let value = self.registers.get_variable(reg);
                 let digits = [
                     value / 100,
                     (value / 10) % 10,
@@ -241,26 +241,26 @@ impl CPU {
                 let address = self.registers.get_index();
                 self.memory.borrow_mut().write(address, &digits);
             }
-            Instruction::STM(x) => {
+            Instruction::STM { reg } => {
                 let mut data: Vec<u8> = Vec::new();
 
-                for i in 0..=x {
+                for i in 0..=reg {
                     data.push(self.registers.get_variable(i));
                 }
 
                 let address = self.registers.get_index();
-                // let new = Address::from(address.get() + x as usize + 1);
+                // let new = Address::from(address.get() + reg as usize + 1);
                 // self.registers.set_index(new);
 
                 self.memory.borrow_mut().write(address, &data);
             }
-            Instruction::LDM(x) => {
+            Instruction::LDM { reg } => {
                 let address = self.registers.get_index();
-                // let new = Address::from(address.get() + x as usize + 1);
+                // let new = Address::from(address.get() + reg as usize + 1);
                 // self.registers.set_index(new);
 
-                let data = self.memory.borrow().read(address, x + 1);
-                assert_eq!(data.len(), x + 1);
+                let data = self.memory.borrow().read(address, reg + 1);
+                assert_eq!(data.len(), reg + 1);
 
                 for (i, value) in data.iter().enumerate() {
                     self.registers.set_variable(i, *value);

@@ -13,7 +13,6 @@ const SPRITE_HEIGHT: usize = 15;
 
 // ----- Structs ----- //
 
-
 pub struct Display {
     grid: [[bool; DISPLAY_WIDTH]; DISPLAY_HEIGHT],
 }
